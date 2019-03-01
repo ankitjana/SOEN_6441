@@ -23,6 +23,7 @@ import com.mxgraph.util.mxCellRenderer;
 
 import beans.Continent;
 import beans.Country;
+import exception.MapInvalidException;
 
 /**
  * @author apoorvasharma
@@ -39,12 +40,14 @@ public class MapValidator {
 		this.inputFile = inputFile;
 	}
 
-	public void createCountryGraph() throws IOException {
+	public void createCountryGraph() throws IOException, MapInvalidException {
 		new utilities.MapParser(inputFile).readFile();
 		countriesList = utilities.MapParser.countriesList;
-		if (continentsList.size() <= 1 || countriesList.size() <= 1) {
-			/// Throw Exception In valid map
-		}
+		
+		  if (continentsList.size() <= 1 || countriesList.size() <= 1) { throw new
+		  MapInvalidException("There should be atleast one continent in Map");
+		  }
+		 
 		try {
 			// adding the nodes to the graph
 			for (Country rec : countriesList) {
@@ -75,9 +78,9 @@ public class MapValidator {
 
 		boolean isConnected = mapisConnected();
 		if (!isConnected) {
-			// throw Error
+			throw new MapInvalidException("The input Map is not connected. Please provide a valid Map");
 		}
-		mapVisual();
+		// mapVisual();
 		System.out.println(subGraphsList.size());
 		/***
 		 * Check if edge exists!!! Country recToReturn = new Country(); recToReturn

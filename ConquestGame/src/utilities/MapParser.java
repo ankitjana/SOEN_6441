@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.Scanner;
 
 import beans.Continent;
-import beans.Country;;
+import beans.Country;
+import exception.MapInvalidException;
 
 /**
  * 
@@ -32,13 +33,16 @@ public class MapParser {
 	 * 
 	 * 
 	 */
-	public void readFile() {
+	public void readFile() throws MapInvalidException{
 		try {
 			// System.out.println(System.getProperty("user.dir"));
 
 			// Scanner sc = new Scanner(new
 			// File("/Users/apoorvasharma/git/SOEN_6441/ConquestGame/src/resources/World.map"));
 			Scanner sc = new Scanner(new File(inputFile));
+			if(inputFile == null) {
+				throw new MapInvalidException("Map File is empty. Please input a valid map File");
+			}
 
 			String tempStr = null;
 			buildMapFile = "";

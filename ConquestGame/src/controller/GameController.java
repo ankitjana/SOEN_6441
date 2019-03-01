@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import beans.*;
+import exception.MapInvalidException;
 import gui.GUI;
 import phases.Attack;
 import phases.ReEnforcement;
@@ -88,12 +89,13 @@ public class GameController {
 	 * The main method.
 	 *
 	 * @param args the arguments
+	 * @throws MapInvalidException 
 	 */
 	/*
 	 * @description :
 	 * @author
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, MapInvalidException {
 		/*File inFile = null;
 		if (0 < args.length) {
 		   inFile = new File(args[0]);
@@ -106,10 +108,15 @@ public class GameController {
 		 * To provide input file use src/resources/World.map as argument
 		 * 
 		 */
-		if (args == null || args.length < MIN_ARGS) {
-            showHelp();
-            return;
-        }
+		try {
+			if (args == null || args.length < MIN_ARGS) {
+			    showHelp();
+			    return;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		String inputFile = args[0];
 		new utilities.MapValidator(inputFile).createCountryGraph();
 		GameController controller = GameController.getInstance();
