@@ -16,6 +16,7 @@ import beans.Continent;
 import beans.Country;
 import beans.Player;
 import controller.GameController;
+import exception.MapInvalidException;
 
 /**
  * @author vanduong
@@ -65,7 +66,7 @@ public class ReEnforcementTest {
 	}
 
 	@Test
-	public void testObtainArmies() {
+	public void testObtainArmies() throws MapInvalidException {
 		//add 1 continent to gamer1
 //		controller.setCurrentPlayer(gamer1);
 		gamer1.addContinent(africa.getName(), africa);
@@ -94,7 +95,7 @@ public class ReEnforcementTest {
 	}
 	
 	@Test
-	public void testDistributeArmies() {
+	public void testDistributeArmies() throws MapInvalidException {
 		Map<Country, Integer> list = new HashMap<Country, Integer>();
 		String [] countryNames = {vn.getName(), indi.getName(), usa.getName(), can.getName()};
 		Country [] countries = {vn, indi, usa, can};

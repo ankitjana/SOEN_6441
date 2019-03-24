@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import controller.GameController;
+import exception.MapInvalidException;
 import gui.CardExchangeView;
 import gui.Observer;
 import gui.UI;
@@ -25,6 +26,10 @@ public class Player implements Observable {
 
 
 	int count =0;
+	int tradeCount =0;
+	int cardNumbers;
+	List<Integer> cardToRemove;
+	Scanner scan= new Scanner(System.in);
 	/** The player name. */
 	private final String playerName;
 	
@@ -70,6 +75,10 @@ public class Player implements Observable {
 	
 	public List<String> getCardsAcquired(){
 		return cardsAcquired;
+	}
+	
+	public int getTradeCount() {
+		return tradeCount;
 	}
 
 
@@ -118,8 +127,6 @@ public class Player implements Observable {
 	public Player(String name) {
 		this(name, true, 0);
 	}
-	
-	
 	
 	/**
 	 * Gets the player name.
@@ -583,21 +590,39 @@ public class Player implements Observable {
 	 * ReEnforcement phase
 	 * This methods calls 2 other private methods to 1) obtain new armies and 2)
 	 * distribute armies among occupied countries.
+	 * @throws MapInvalidException invalid input
 	 */
-	public void reEnforce() {
-		Scanner scan= new Scanner(System.in);
+	public void reEnforce() throws MapInvalidException {
 		System.out.println("-----------Re-EnForcement Phase-----------");
 		obtainNewArmies();
 		this.notifyChanges();
-    Map<Country, Integer> list = controller.distributeArmies();
-
+		Map<Country, Integer> list = controller.distributeArmies();
 		distributeArmies();
-		System.out.println("Do you want to view your cards to exchange ? Y/N");
-		char choice= scan.next().charAt(0);
-		System.out.println("Your choice is:"+ choice);
-		if(choice=='Y') {
-			cardView.getCardProgress();
+	}
+	
+	public int exchangeCards() throws MapInvalidException {
+			if(cardView.isExchangeCardsPossible()== true) {
+				cardToRemove= new ArrayList<Integer>();
+				System.out.println("You have the following cards :"+ getCardsAcquired());
+				System.out.println("Please select three cards you want to trade off :");
+				System.out.println("(Provide the card positions from 0 to n)");
+				for(int i=0;i<3;i++) {
+					cardNumbers= scan.nextInt();
+					cardToRemove.add(cardNumbers);
+				}
+				removeCards(cardToRemove);
+				tradeCount++;
+				System.out.println("You would get additional " + (tradeCount*5) + "armies for this card trade during re-enforcement phase");
+			}
+			else {
+				throw new MapInvalidException("You don't have enough cards to trade off for army reinforcement");
+			}
+			return tradeCount;
 		}
+	
+	public void removeCards(List<Integer> cardPosition) {
+		getCardsAcquired().removeAll(cardPosition);
+		
 	}
 
 	/**
@@ -619,14 +644,13 @@ public class Player implements Observable {
 	 * Obtain new armies.
 	 *
 	 * @return total new armies current player is granted to be added to existing armies.
+	 * @throws MapInvalidException invalid input
 	 */
-	public int obtainNewArmies() {
+	public int obtainNewArmies() throws MapInvalidException {
 		
-		//player's choice of set of cards to be traded
-		int setChoice = (cardSetChoice > 1) ? cardSetChoice : 1;
 		//redeem armies by cards
-		// TODO
-//		int armiesByCards = redeemCards(setChoice);
+		int tradeNumber= getTradeCount();
+		int armiesByCards = tradeNumber*5;
 		
 		//obtain armies by number of territories occupied
 		int numCountries = this.getPlayerCountries().size();
@@ -643,7 +667,7 @@ public class Player implements Observable {
 		//obtain armies by The specific territory pictured on a traded-in card
 		//NOT APPLICABLE
 		//TODO add armiesByCards later
-		int totalNewArmies = armiesByCountries + armiesByContinents;
+		int totalNewArmies = armiesByCountries + armiesByContinents + armiesByCards;
 		this.increaseArmies(totalNewArmies);
 		return totalNewArmies;
 	}

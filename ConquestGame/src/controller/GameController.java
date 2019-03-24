@@ -45,6 +45,8 @@ public class GameController {
 /** The number of players. */
 //	HashMap<Player,WorldMap> countryOwnership = new HashMap<Player,WorldMap>();
 	private int numberOfPlayers;
+	
+	Scanner scan= new Scanner(System.in);
 
 
 
@@ -72,6 +74,7 @@ public class GameController {
 	/** The ui. */
 	private UI ui = null;
 	private CustomMapGenerator customMap=null;
+	private static CardExchangeView cardView= new CardExchangeView();
 	
 	
 	
@@ -279,8 +282,9 @@ public class GameController {
 	
 	/**
 	 * Take turns.
+	 * @throws MapInvalidException for invalid input
 	 */
-	public void takeTurns() {
+	public void takeTurns() throws MapInvalidException {
 		int i = 0;
 		while (winner == null) {
 			i = i % playerList.size();
@@ -294,9 +298,27 @@ public class GameController {
     
 	/**
 	 * Take phases.
+	 * @throws MapInvalidException for invalid input
 	 */
-	public void takePhases() {
+	public void takePhases() throws MapInvalidException {
 //		currentPhase = new ReEnforcement();
+		System.out.println("Do you want to view your cards to exchange ? Y/N");
+		char viewChoice= scan.next().charAt(0);
+		if(viewChoice=='Y') {
+			cardView.getCardProgress();
+		}
+		if(currentPlayer.getCardsAcquired().size()>=3) {
+			System.out.println("Do you want to exchange your cards for army reinforcement ? Y/N");
+			char exchangeChoice= scan.next().charAt(0);
+			if(exchangeChoice=='Y') {
+				currentPlayer.exchangeCards();
+			}
+		}
+		
+		if(currentPlayer.getCardsAcquired().size()>=5) {
+			System.out.println("Since you have 5 or more cards, you have to exchange one set of your cards");
+			currentPlayer.exchangeCards();
+		}
 		currentPlayer.reEnforce();
 		currentPlayer.notifyChanges();
 		while(true) {
@@ -321,7 +343,6 @@ public class GameController {
 				}
 				if(numberOfCountriesInvaded>=2) {
 					currentPlayer.addCards();
-					System.out.println("You got a random card !");
 				}
 				currentPlayer.fortify();
 				currentPlayer.notifyChanges();
@@ -390,8 +411,9 @@ public class GameController {
 	
 	/**
 	 * Inits the game.
+	 * @throws MapInvalidException for invalid input
 	 */
-	public void initGame() {
+	public void initGame() throws MapInvalidException {
 		//Getting Player Info
 				System.out.println("Please enter the number of players between 2 and 6: ");
 				Scanner inputNumPlayers = new Scanner(System.in);	
