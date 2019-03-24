@@ -125,8 +125,9 @@ public class ControllerTest {
 		try {
 			method.invoke(controller);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			fail();
 			e.printStackTrace();
+			fail();
+
 		}
 		assertEquals(2, gamer1.getNumArmiesDispatched());
 		

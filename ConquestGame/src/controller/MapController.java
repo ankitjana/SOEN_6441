@@ -26,7 +26,7 @@ import java.lang.*;
  * continents. It is also responsible for handling addition or deletion of
  * adjacent Countries adjacent countries.
  * 
- * @author apoorvasharma
+ * @author apoorvasharma 
  * @version 1.0.0
  */
 public class MapController {
@@ -34,6 +34,7 @@ public class MapController {
 	public ArrayList<Country> countriesDefault;
 	public ArrayList<Continent> continentsDefault;
 	private Map<String, ArrayList<Country>> worldMap;
+	public Map<String, Continent> continentmap;
 	utilities.MapParser mpsr;
 
 	private MapController() {}
@@ -55,6 +56,12 @@ public class MapController {
 			continentsDefault =new ArrayList<Continent>();
 		}else if("EditMap".equalsIgnoreCase(OperationType)) {
 			validateMap(inputFile);
+		}
+		if(!continentsDefault.isEmpty()) {
+			continentmap = new HashMap <String, Continent>();
+			for(Continent crec :continentsDefault) {
+				continentmap.put(crec.getName(),crec);
+			}
 		}
 		
 	}

@@ -12,6 +12,7 @@ import java.util.Scanner;
 import beans.*;
 import exception.MapInvalidException;
 import gui.CardExchangeView;
+import gui.Observer;
 import gui.UI;
 //import phases.Attack;
 
@@ -113,54 +114,15 @@ public class GameController {
 		GameController controller = GameController.getInstance();
 		controller.createUI();
 		controller.loadMap();
-				
-		//Getting Player Info
-		System.out.println("Please enter the number of players between 2 and 6: ");
-		Scanner inputNumPlayers = new Scanner(System.in);	
-		int numberOfPlayers = inputNumPlayers.nextInt();
-		//if user inputs number of players less than 2 or greater than 6 then exit the game
-		if (!(numberOfPlayers >= 2 && numberOfPlayers <= 6)) {
-			System.exit(0);
-		}
-		int initialArmies = 0;
-		switch(numberOfPlayers) {
-		//TODO	not so sure about case 2
-			case 2:
-				initialArmies = 40;
-			break;
-			case 3:
-				initialArmies = 35;
-			break;
-			case 4:
-				initialArmies = 30;
-			break;
-			case 5:
-				initialArmies = 25;
-			break;
-			case 6:
-				initialArmies = 20;
-			break;	
-		}
-		for(int i = 1; i <=numberOfPlayers ; i++) {
-			String playerName = "Player " + i;
-			Player player = new Player(playerName, true, initialArmies);
-			controller.addPlayer(player);
-		}
-		
-		controller.registerObserver();
-		//TODO MOVE CODE TO UI CLASS UNDER APPROPRIATE METHODS
-		System.out.println("evenly distributing countries among players in random fashion...");
-		controller.randomizeCountryDistribution(countryList, controller.getPlayerList());
-		controller.placeInitialArmies();
-		controller.takeTurns();	
+		controller.initGame();
 	}
 	
 	/**
-	 * Register observer.
+	 * Register given observer with all player
 	 */
-	private void registerObserver() {
+	public void registerObserver(Observer ob) {
 		for(int i = 0; i < numberOfPlayers; i++) {
-			controller.playerList.get(i).attach(ui);
+			controller.playerList.get(i).attach(ob);
 		}
 	}
 
@@ -178,6 +140,18 @@ public class GameController {
 			}
 		}
 		
+	}
+	
+	private void placeArmiesForSetup() {
+		//each player take turns to place their armies
+				for(int i = 0; i < controller.playerList.size(); i++) {
+					Player player = playerList.get(i);
+					player.notifyChanges();
+					ui.showDialog("Please assign armies to countries for " + player.getPlayerName());
+					int numArmiesToDispatch = player.getArmies() - player.getNumArmiesDispatched();
+					Map<Country, Integer> selection = ui.distributeArmies(player.getPlayerCountries(), numArmiesToDispatch);
+					player.distributeArmies(selection);
+				}
 	}
 
 	/**
@@ -418,9 +392,45 @@ public class GameController {
 	 * Inits the game.
 	 */
 	public void initGame() {
-		//TODO	get number of players in from user
-		//TODO	assign each player an initial number of armies (based on risk rule)
-		//each player take turn to play
+		//Getting Player Info
+				System.out.println("Please enter the number of players between 2 and 6: ");
+				Scanner inputNumPlayers = new Scanner(System.in);	
+				int numberOfPlayers = inputNumPlayers.nextInt();
+				//if user inputs number of players less than 2 or greater than 6 then exit the game
+				if (!(numberOfPlayers >= 2 && numberOfPlayers <= 6)) {
+					System.exit(0);
+				}
+				int initialArmies = 0;
+				switch(numberOfPlayers) {
+					case 2:
+						initialArmies = 40;
+					break;
+					case 3:
+						initialArmies = 35;
+					break;
+					case 4:
+						initialArmies = 30;
+					break;
+					case 5:
+						initialArmies = 25;
+					break;
+					case 6:
+						initialArmies = 20;
+					break;	
+				}
+				for(int i = 1; i <=numberOfPlayers ; i++) {
+					String playerName = "Player " + i;
+					Player player = new Player(playerName, true, initialArmies);
+					controller.addPlayer(player);
+				}
+				
+				controller.registerObserver(ui);
+				System.out.println("evenly distributing countries among players in random fashion...");
+				controller.randomizeCountryDistribution(countryList, controller.getPlayerList());
+				System.out.println("-------- Setup --------");
+				controller.placeInitialArmies();
+				controller.placeArmiesForSetup();
+				controller.takeTurns();	
 	}
 	
 	
@@ -560,7 +570,6 @@ public class GameController {
 	 * @return the string
 	 */
 	public String selectAttackingCountry(List<String> attackingCountries) {
-		// TODO Auto-generated method stub
 		return UI.selectAttackingCountry(attackingCountries);
 	}
 

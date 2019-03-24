@@ -17,10 +17,9 @@ import exception.MapInvalidException;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class CustomMapGenerator.
- *
- * @author ankit This class is used to take user input for creating a custom map
- *         or load an existing map.
+ * This class is responsible for loading a map,creating a new map or editing an existing map.
+ * 
+ * 
  */
 public class CustomMapGenerator {
 	
@@ -51,7 +50,7 @@ public class CustomMapGenerator {
 	/** The country default. */
 	public List<Country> countryDefault =null;
 	
-	
+	private Map<String, Continent> continentmap=null;
 	/** The adj country map. */
 	private Map<String,List<String>> adjCountryMap = null;
 	
@@ -79,6 +78,7 @@ public class CustomMapGenerator {
 		countries = new ArrayList<String>();
 		adjMap = new HashMap<String, List<String>>();
 		countryDefault = new ArrayList<Country>();
+		continentmap =new HashMap<String, Continent>();
 	}
 
 	/**
@@ -143,6 +143,7 @@ public class CustomMapGenerator {
 		mapController.addCountry(countryList);
 		mapController.mapWritter(FILEPATH);
 		countryDefault =mapController.countriesDefault;
+		continentmap =mapController.continentmap;
 		
 	}
 	
@@ -292,6 +293,7 @@ public class CustomMapGenerator {
 		}
 		boolean flag = mapController.mapWritter(EDITEDMAP);
 		countryDefault =mapController.countriesDefault;
+		continentmap =mapController.continentmap;
 		if(flag) {
 			System.out.println("Map is successfully editied and validated.");
 		}
@@ -301,7 +303,18 @@ public class CustomMapGenerator {
 		mapController = MapController.getInstance();
 		mapController.init("LoadMap", Config.getProperty("worldmap"));
 		countryDefault =mapController.countriesDefault;
-		System.out.println(countryDefault.size());
+		continentmap =mapController.continentmap;
 		
+	}
+	
+	
+	public Continent getContinent(String name) {
+		System.out.print(continentmap.size());
+		if(continentmap.get(name)!=null) {
+			return continentmap.get(name);
+		}
+		else { 
+			return null;
+		}
 	}
 }

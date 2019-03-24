@@ -419,7 +419,7 @@ public class Player implements Observable {
 					attackerDice = rollDiceAttacker(attackingCountry, attackerSelectNumDice);
 					break;
 				}catch(IllegalArgumentException e) {
-					controller.showDialog(e.getMessage());
+					throw e;
 				}
 			}
 			
@@ -430,7 +430,7 @@ public class Player implements Observable {
 					defenderDice = rollDiceDefender(attackedCountry,defenderSelectNumDice);
 					break;
 				}catch(IllegalArgumentException e){
-					controller.showDialog(e.getMessage());
+					throw e;
 				}
 			}
 			
@@ -589,6 +589,8 @@ public class Player implements Observable {
 		System.out.println("-----------Re-EnForcement Phase-----------");
 		obtainNewArmies();
 		this.notifyChanges();
+    Map<Country, Integer> list = controller.distributeArmies();
+
 		distributeArmies();
 		System.out.println("Do you want to view your cards to exchange ? Y/N");
 		char choice= scan.next().charAt(0);
@@ -608,6 +610,7 @@ public class Player implements Observable {
 			int numArmies = entry.getValue();
 			int totalArmiesToSet = numArmies + country.getNumArmies();
 			this.getCountryByName(country.getName()).setNumArmies(totalArmiesToSet);
+			this.setNumArmiesDispatched(this.getNumArmiesDispatched() + numArmies);
 		}
 		
 	}
@@ -722,9 +725,9 @@ public class Player implements Observable {
 		for (Map.Entry<Country, Integer> entry : list.entrySet()) {
 			Country country = entry.getKey();
 			int numArmies = entry.getValue();
-			this.getCountryByName(country.getName()).setNumArmies(numArmies);
 			int totalArmiesToSet = numArmies + country.getNumArmies();
 			this.getCountryByName(country.getName()).setNumArmies(totalArmiesToSet);
+			this.setNumArmiesDispatched(this.getNumArmiesDispatched() + numArmies);
 		}
 	}
 	

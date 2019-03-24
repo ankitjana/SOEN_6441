@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class CountryTest {
-private Player player;
+	private Player player, gamer1, gamer2;
 	
 	private Country vn;
 	private Country indi;
@@ -32,7 +32,9 @@ private Player player;
 
 	@Before
 	public void setUp() throws Exception {
-player = new Player("PlayerOne");
+		player = new Player("PlayerOne");
+		gamer1 = new Player("gamer1");
+		gamer2 = new Player("gamer2");
 		
 		vn = new Country("Vietnam");
 		indi = new Country("India");
@@ -59,7 +61,7 @@ player = new Player("PlayerOne");
 
 	@Test
 	public void test() {
-	eng.setOwner(player);
+		eng.setOwner(player);
 		
 		List<String> adjacentCountries = new ArrayList<String>();
 		adjacentCountries.add(indi.getName());
@@ -73,6 +75,11 @@ player = new Player("PlayerOne");
 		assertNotNull(eng.getlongitude());
 		assertNotNull(eng.getLatitude());
 	
+	}
+	
+	@Test
+	public void testPlaceInitialArmies() {
+		
 	}
 
 }
