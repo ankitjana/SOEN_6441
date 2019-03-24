@@ -5,6 +5,11 @@ import java.util.List;
 import beans.Player;
 import controller.GameController;
 
+/**
+ * 
+ * @author yadavsurbhi
+ *
+ */
 public class CardExchangeView {
 public GameController controller;
 	
@@ -23,7 +28,7 @@ public GameController controller;
 			String playerName = player.getPlayerName();
 			System.out.println("*".repeat(16));
 			System.out.println("PlayerName : " + playerName);
-			System.out.println("Total cards acquired : "+ player.getCards());
+			System.out.println("Total cards acquired : "+ player.getCardsAcquired().size());
 			System.out.println("-".repeat(10));
 			}
 		}

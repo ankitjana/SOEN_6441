@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Scanner;
 
 import controller.GameController;
+import gui.CardExchangeView;
 import gui.Observer;
 import gui.UI;
 import utilities.DiceRoller;
@@ -22,7 +24,7 @@ public class Player implements Observable {
 	
 
 
-
+	int count =0;
 	/** The player name. */
 	private final String playerName;
 	
@@ -41,16 +43,13 @@ public class Player implements Observable {
 	/** The cards. */
 	private CardType cards;
 	
-	private List<String> cardsAcquired;
-	private Random random;
-	private UI uiInstance;
-	
 	/** The observer list. */
 	private List<Observer> obList = null;
 	
 	private int numArmiesDispatched = 0;
 	
 	private static GameController controller = GameController.getInstance();
+	private static CardExchangeView cardView= new CardExchangeView();
 	
 	
 	/** The minimum new armies each user gets in ReEnforcement phase. */
@@ -58,6 +57,8 @@ public class Player implements Observable {
 	
 	/** The card set choice. */
 	private int cardSetChoice = 0;
+	private Random random;
+	private List<String> cardsAcquired= new ArrayList<String>();
 	
 	
 	/**
@@ -65,6 +66,10 @@ public class Player implements Observable {
 	 */
 	public int getNumArmiesDispatched() {
 		return numArmiesDispatched;
+	}
+	
+	public List<String> getCardsAcquired(){
+		return cardsAcquired;
 	}
 
 
@@ -75,19 +80,6 @@ public class Player implements Observable {
 	public void setNumArmiesDispatched(int numArmiesDispatched) {
 		this.numArmiesDispatched = numArmiesDispatched;
 	}
-
-
-
-	/**
-	 * Gets the cards.
-	 *
-	 * @return The CardType object.
-	 */
-	public CardType getCards() {
-		return cards;
-	}
-
-
 
 	/**
 	 * Sets the cards.
@@ -193,15 +185,16 @@ public class Player implements Observable {
 		if(this.armies >= armies)
 			this.armies = this.armies - armies;
 	}
+	
 	public List<String> addCards() {
 		random= new Random();
-		cardsAcquired= new ArrayList<String>();
 		List<String> cardType = Arrays.asList("INFANTRY", "CAVALRY", "ARTILLERY");
 		int RandomCard = random.nextInt(cardType.size());
 		cardsAcquired.add(cardType.get(RandomCard));
+		System.out.println("Random card is assigned to this player");
+		System.out.println("Card assigned is :" + cardsAcquired );
 		return cardsAcquired;
 	}
-	
 	
 	/**
 	 * Adds the continent.
@@ -486,7 +479,6 @@ public class Player implements Observable {
 	 */
 	private void invade(int[] result, Country attackingCountry, Country attackedCountry, int attackerSelectNumDice) {
 		Player defender = attackedCountry.getOwner();
-		uiInstance = new UI();
 		if(result[0] > 0) {
 			attackingCountry.setNumArmies(attackingCountry.getNumArmies() - result[0]);
 			this.setArmies(this.getArmies() - result[0]);
@@ -499,13 +491,17 @@ public class Player implements Observable {
 		//check if attacker can occupy defender's territory (attackedCountry)
 		if(attackedCountry.getNumArmies() == 0) {
 			this.addCountry(attackedCountry.getName(), attackedCountry);
-			//cards are added after a country is conquered
-			this.addCards();
+			this.winCountry();
 			defender.removeCountry(attackedCountry.getName());
 			attackedCountry.setNumArmies(attackedCountry.getNumArmies() + attackerSelectNumDice);
 			attackingCountry.setNumArmies(attackingCountry.getNumArmies() - attackerSelectNumDice);
 		}
 		
+	}
+	
+	public int winCountry(){
+		count++;
+		return count;
 	}
 
 
@@ -589,11 +585,17 @@ public class Player implements Observable {
 	 * distribute armies among occupied countries.
 	 */
 	public void reEnforce() {
+		Scanner scan= new Scanner(System.in);
 		System.out.println("-----------Re-EnForcement Phase-----------");
 		obtainNewArmies();
 		this.notifyChanges();
 		distributeArmies();
-		
+		System.out.println("Do you want to view your cards to exchange ? Y/N");
+		char choice= scan.next().charAt(0);
+		System.out.println("Your choice is:"+ choice);
+		if(choice=='Y') {
+			cardView.getCardProgress();
+		}
 	}
 
 	/**
