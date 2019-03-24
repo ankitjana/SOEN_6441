@@ -301,6 +301,7 @@ public class GameController {
 		currentPlayer.notifyChanges();
 		while(true) {
 			try {
+				int numberOfCountriesInvaded= 0;
 				//ask user if wants to make an attack and check if user is able to attack (at least 2 armies in one country)
 				if(isWar() && canAttack()) {	
 					do {
@@ -313,9 +314,14 @@ public class GameController {
 							System.exit(0);
 						}
 						currentPlayer.notifyChanges();
-					
 					}while(canAttack() && keepWar());
-			
+					numberOfCountriesInvaded= currentPlayer.winCountry();
+					System.out.println("Number of countries this player invaded in attack phase : "+ (numberOfCountriesInvaded - 1) );
+					//System.out.println("Player completed his attack phase. Going for fortification phase");
+				}
+				if(numberOfCountriesInvaded>=2) {
+					currentPlayer.addCards();
+					System.out.println("You got a random card !");
 				}
 				currentPlayer.fortify();
 				currentPlayer.notifyChanges();

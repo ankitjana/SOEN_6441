@@ -49,7 +49,7 @@ public class MapUpdateTest {
 	public void setUp() throws Exception {
 
 		mapController = MapController.getInstance();
-		editMap = EditMap.getInstance();
+		//editMap = EditMap.getInstance();
 		addContinents = new HashMap<String, Integer>();
 		addCountries = new Object[10];
 		adjCountries = new HashMap<String, List<String>>();
