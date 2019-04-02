@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import beans.Continent;
 import beans.Country;
@@ -34,6 +35,9 @@ public abstract class Strategy {
 
 	/** The player. */
 	private Player player = null;
+	private Human humanPlayer;
+	private AggressiveStrategy aggressivePlayer;
+	transient Scanner scan= new Scanner(System.in);
 
 	/**
 	 * Instantiates a new strategy.

@@ -22,6 +22,7 @@ public class AggressiveStrategy extends Strategy{
 	private Country weakestDefender =null;
 	public AggressiveStrategy(Player player) {
 		super(player);
+		this.player =player;
 		// TODO Auto-generated constructor stub
 	}
 
@@ -114,6 +115,7 @@ public class AggressiveStrategy extends Strategy{
 	@Override
 	public void placeArmiesForSetup() {
 		// TODO Auto-generated method stub
+		System.out.println("in aggressive strategu"+player);
 		player.notifyChanges(EventType.PHASE_NOTIFY);
 		// get the country with  with highest number of defenders and assign all the remaining armies to it,
 		Country rec=compareCountries();

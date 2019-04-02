@@ -12,6 +12,8 @@ import java.util.Scanner;
 import controller.GameController;
 import gui.CardExchangeView;
 import gui.Observer;
+import strategies.AggressiveStrategy;
+import strategies.Human;
 import strategies.Strategy;
 import utilities.CustomMapGenerator;
 

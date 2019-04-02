@@ -20,6 +20,9 @@ import gui.PhaseView;
 import gui.UI;
 //import phases.Attack;
 import gui.WorldDominationView;
+import strategies.AggressiveStrategy;
+import strategies.Human;
+import strategies.Strategy;
 import utilities.CustomMapGenerator;
 import utilities.MapValidator;
 
@@ -83,13 +86,15 @@ public class GameController implements Serializable{
 
 	/** The ui. */
 	private UI ui = null;
+	Map<String,Strategy> strategyMapping;
 
 
 	private CustomMapGenerator customMap=null;
 	
 	/** The continent list. */
 	private List<Continent> continentList = null;
-	
+	//private Human humanPlayer;
+	//private AggressiveStrategy aggressivePlayer;
 	
 	
 
@@ -119,6 +124,7 @@ public class GameController implements Serializable{
 		playerList = new ArrayList<Player>();
 		ui = new UI();
 		customMap = CustomMapGenerator.getInstance();
+		strategyMapping = new HashMap<String,Strategy>();
 	}
 
 	/**
@@ -183,7 +189,6 @@ public class GameController implements Serializable{
 				player.setNumArmiesDispatched(j + 1);
 			}
 		}
-
 	}
 
 	
@@ -196,6 +201,10 @@ public class GameController implements Serializable{
 		for (int i = 0; i < controller.playerList.size(); i++) {
 			Player player = playerList.get(i);
 			currentPlayer = player;
+			System.out.println("Strategy selected for" + " "+ player.getPlayerName()+ "is :"+ strategyMapping.get(player.getPlayerName()));
+			player.setStrategy(new AggressiveStrategy(player));
+			System.out.println(player.getStrategy());
+			
 			player.getStrategy().placeArmiesForSetup();
 		}
 	}
@@ -465,6 +474,7 @@ public class GameController implements Serializable{
 	 * @return current player
 	 */
 	public Player getCurrentPlayer() {
+		System.out.println("Current Player is :" +currentPlayer);
 		return currentPlayer;
 	}
 
@@ -475,6 +485,28 @@ public class GameController implements Serializable{
 	 */
 	public void setCurrentPlayer(Player player) {
 		currentPlayer = player;
+	}
+	
+	public void decideStrategy() {
+		try {
+			for (int i = 0; i < controller.playerList.size(); i++) {
+				Player player = controller.getPlayer(i);
+			System.out.println("Which player stategy do you want to use ?");
+			System.out.println("1. Human 2. Aggressive");
+			int choice = scan.nextInt();
+			switch(choice) {
+				case 1: player.setStrategy(new Human(player));
+						break;
+				case 2: player.setStrategy(new AggressiveStrategy(player));
+						break;
+				}
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getCause());
+			System.out.println(e.getStackTrace());
+			System.out.println(e.getMessage());
+		}
 	}
 
 	/**
@@ -509,12 +541,22 @@ public class GameController implements Serializable{
 						initialArmies = 20;
 					break;	
 				}
+				
 				for(int i = 1; i <=numberOfPlayers ; i++) {
 					String playerName = "Player " + i;
 					Player player = new Player(playerName, true, initialArmies);
 					controller.addPlayer(player);
+					System.out.println("Which strategy you want to use for"+ " "+ player.getPlayerName());
+					System.out.println("Press 1 for Human or Press 2 for Aggressive");
+					int choice= scan.nextInt();
+					if(choice==1) {
+						strategyMapping.put(playerName, new Human(player));
+					}
+					if(choice==2) {
+						strategyMapping.put(playerName, new AggressiveStrategy(player));
+					}
+					System.out.println("Player Name"+playerName);
 				}
-				
 				controller.registerObserver(ui, EventType.PHASE_NOTIFY);
 				controller.registerObserver(wdView, EventType.FORTIFICATION_NOTIFY);
 				controller.registerObserver(cardView, EventType.CARDS_EXCHANGE_NOTIFY);
