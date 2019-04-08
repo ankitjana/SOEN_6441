@@ -13,6 +13,7 @@ import java.util.Scanner;
 import beans.Continent;
 import beans.Country;
 import beans.EventType;
+import beans.Phase;
 import beans.Player;
 import exception.MapInvalidException;
 import gui.CardExchangeView;
@@ -431,7 +432,7 @@ public class GameController implements Serializable{
 					if(strategyInput.contains(",")) {
 						strategyList= strategyInput.split(",");
 					}
-					phaseCount= 0;
+					//phaseCount= 0;
 					controller.createWorldDominationView();
 					controller.createCardExchangeView();
 					controller.initGame();
