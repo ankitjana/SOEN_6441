@@ -486,23 +486,23 @@ public class GameController implements Serializable{
 				Player player = playerList.get(i);
 				currentPlayer = player;
 				System.out.println("Assign a strategy for"+" "+ currentPlayer.getPlayerName()+" "+":");
-				int choice= scan.nextInt();
-				if(choice==1) {
+				String choice= scan.nextLine();
+				if(choice.equalsIgnoreCase("Aggressive")) {
 				player.setStrategyType("Aggressive");
 				player.setStrategy(new AggressiveStrategy(currentPlayer));
-				}else if(choice==2){
+				}else if(choice.equalsIgnoreCase("Human")){
 					player.setStrategyType("Human");
 					player.setStrategy(new Human(currentPlayer));
 				}
-				else if(choice==3) {
+				else if(choice.equalsIgnoreCase("Benevolent")) {
 					player.setStrategyType("Benevolent");
 					player.setStrategy(new BenevolentStrategy(currentPlayer));
 				}
-				else if(choice==4) {
+				else if(choice.equalsIgnoreCase("Cheater")) {
 					player.setStrategyType("Cheater");
 					player.setStrategy(new CheaterStrategy(currentPlayer));
 				}
-				else if(choice==5) {
+				else if(choice.equalsIgnoreCase("Random")) {
 					player.setStrategyType("Random");
 					player.setStrategy(new RandomStrategy(currentPlayer));
 				}
@@ -973,14 +973,13 @@ public class GameController implements Serializable{
 				setupStrategy();
 				controller.placeInitialArmies();
 				controller.placeArmiesForSetup();
-				
 				controller.takeTurns();
 		}
 		else {
-			numberOfPlayers = strategyList.length;
-			System.out.println("Number of Players: "+numberOfPlayers);
+			int numberOfPlayersForTournament = strategyList.length;
+			System.out.println("Number of Players: "+numberOfPlayersForTournament);
 			int initialArmies = 0;
-			switch(numberOfPlayers) {
+			switch(numberOfPlayersForTournament) {
 				case 2:
 					initialArmies = 40;
 				break;
@@ -991,10 +990,12 @@ public class GameController implements Serializable{
 					initialArmies = 30;
 				break;	
 			}
-			for(int i = 1; i <=numberOfPlayers ; i++) {
+			System.out.println("Number of Players: "+numberOfPlayersForTournament);
+			for(int i = 1; i <= numberOfPlayersForTournament ; i++) {
 				String playerName = "Player " + i;
 				Player player = new Player(playerName, true, initialArmies);
 				controller.addPlayer(player);
+				System.out.println("Value of i is :" + i);
 			}
 			
 			controller.registerObserver(ui, EventType.PHASE_NOTIFY);
