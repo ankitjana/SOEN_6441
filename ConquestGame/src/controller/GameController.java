@@ -576,13 +576,26 @@ public class GameController implements Serializable{
 
 	private void placeArmiesForSetup() {
 		// each player take turns to place their armies
-		for (int i = 0; i < controller.playerList.size(); i++) {
-			Player player = playerList.get(i);
-			currentPlayer = player;
-			//player.setStrategyType("Benevolent");
-			//player.setStrategy(new AggressiveStrategy(currentPlayer));
-			//player.setStrategy(new BenevolentStrategy(currentPlayer));
-			player.getStrategy().placeArmiesForSetup();
+		if(tournamentFlag==false) {
+			for (int i = 0; i < controller.playerList.size(); i++) {
+				Player player = playerList.get(i);
+				currentPlayer = player;
+				//player.setStrategyType("Benevolent");
+				//player.setStrategy(new AggressiveStrategy(currentPlayer));
+				//player.setStrategy(new BenevolentStrategy(currentPlayer));
+				player.getStrategy().placeArmiesForSetup();
+			}	
+		}
+		else {
+			int nOPForTournament= strategyList.length;
+			for (int i = 0; i < nOPForTournament; i++) {
+				Player player = playerList.get(i);
+				currentPlayer = player;
+				//player.setStrategyType("Benevolent");
+				//player.setStrategy(new AggressiveStrategy(currentPlayer));
+				//player.setStrategy(new BenevolentStrategy(currentPlayer));
+				player.getStrategy().placeArmiesForSetup();
+			}	
 		}
 	}
 
