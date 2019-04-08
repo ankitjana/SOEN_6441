@@ -58,6 +58,7 @@ public class Human extends Strategy implements Serializable {
 	 * @see strategies.Strategy#attack()
 	 */
 	public void attack() {
+		controller.setCurrentPhase("Attack");
 		PhaseView phaseView = new PhaseView();
 		controller.registerObserver(phaseView, EventType.PHASE_VIEW_NOTIFY);
 		player.notifyChanges(EventType.PHASE_VIEW_NOTIFY);
@@ -98,9 +99,7 @@ public class Human extends Strategy implements Serializable {
 			attackingCountryName = attackingCountries.get(0);
 		}
 		
-		
 		Country attackingCountry = map.getCountry(attackingCountryName);
-		controller.setAttackingCountry(attackingCountry);
 		//check if the attacking country has at least 2 armies
 		if(attackingCountry.getNumArmies() < 2) {
 			throw new IllegalArgumentException("The attacking country must have at least 2 armies!");
@@ -151,6 +150,7 @@ public class Human extends Strategy implements Serializable {
 	 * @see strategies.Strategy#fortify()
 	 */
 	public void fortify() {
+		controller.setCurrentPhase("Fortification");
 		PhaseView phaseView = new PhaseView();
 		controller.registerObserver(phaseView, EventType.PHASE_VIEW_NOTIFY);
 		player.notifyChanges(EventType.PHASE_VIEW_NOTIFY);

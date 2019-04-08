@@ -38,6 +38,7 @@ public class AggressiveStrategy extends Strategy implements Serializable {
 	 */
 	@Override
 	public void reEnforce() {
+		controller.setCurrentPhase("Reenforce");
 		int newArmies = obtainNewArmies();
 		attackingCountry = compareCountries("strongest", null);
 		List<Country> defendingNeighbours = getdefendingNeighbours(attackingCountry);
@@ -67,6 +68,7 @@ public class AggressiveStrategy extends Strategy implements Serializable {
 	 */
 	@Override
 	public void attack() {
+		controller.setCurrentPhase("Attack");
 		PhaseView phaseView = new PhaseView();
 		controller.registerObserver(phaseView, EventType.PHASE_VIEW_NOTIFY);
 		player.notifyChanges(EventType.PHASE_VIEW_NOTIFY);
@@ -96,6 +98,7 @@ public class AggressiveStrategy extends Strategy implements Serializable {
 	 */
 	@Override
 	public void fortify() {
+		controller.setCurrentPhase("Fortification");
 		PhaseView phaseView = new PhaseView();
 		controller.registerObserver(phaseView, EventType.PHASE_VIEW_NOTIFY);
 		player.notifyChanges(EventType.PHASE_VIEW_NOTIFY);
