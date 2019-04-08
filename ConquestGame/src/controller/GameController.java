@@ -60,7 +60,7 @@ public class GameController implements Serializable{
 	private static int gameCount=0;
 	private static int turnCount;
 	private static String mapInput=null;
-	private static String[] mapList;
+	private static String[] mapList=null;
 	private static String strategyInput= null;
 	private static String[] strategyList;
 	private static String[][] finalWinnerList;
@@ -337,8 +337,6 @@ public class GameController implements Serializable{
 		ui = new UI();
 		customMap = CustomMapGenerator.getInstance();
 		//tournamentMode = new TournamentMode();
-		mapList= new String[10];
-		strategyList= new String[10];
 		finalWinnerList= new String[10][10];
 		
 	}
@@ -394,21 +392,20 @@ public class GameController implements Serializable{
 	}
 	
 	public void modeTournament() throws ClassNotFoundException, IOException, MapInvalidException{
+		mapList= new String[5];
+		strategyList= new String[5];
 		System.out.println("We have 5 different Maps for you to play");
 		System.out.println("State on which maps you want to play the game");
 		System.out.println("Ex: Map1, Map2, Map3 or more");
 		mapInput= tScan.nextLine();
-		if(mapInput.contains(",//s+")) {
-			mapList= mapInput.split(",//s+");
+		if(mapInput.contains(",")) {
+			mapList= mapInput.split(",");
 		}
-		
+		System.out.println(mapList.length);
 		System.out.println("Provide player's strategies :");
 		System.out.println("*********STRATEGY MENU************");
 		System.out.println("1. Aggressive 2. Benevolent 3. Cheater 4. Random");
 		strategyInput= tScan.nextLine();
-		if(strategyInput.contains(",")) {
-			strategyList= strategyInput.split(",");
-		}
 
 		System.out.println("Provide number of games on each map you want to play on: ");
 		gameCount= tScan.nextInt();
@@ -416,12 +413,17 @@ public class GameController implements Serializable{
 		turnCount= tScan.nextInt();
 		for(int i=0; i< mapList.length; i++) {
 			try {
-				customMap.LoadMap();
+				System.out.println("Length of mapList is: "+mapList.length);
+				controller.loadMap();
 				for(int j=0; j < gameCount; j++) {
+					if(strategyInput.contains(",")) {
+						strategyList= strategyInput.split(",");
+					}
 					phaseCount= 0;
 					controller.createWorldDominationView();
 					controller.createCardExchangeView();
-					controller.initGame();	
+					controller.initGame();
+					System.out.println("Game"+" "+gameCount+" "+"has ended. Going for next game...");
 					if(winner!=null) {
 						finalWinnerList[i][j]= controller.getWinner().getStrategyType();	
 					}
@@ -463,13 +465,27 @@ public class GameController implements Serializable{
 	 * place one army on each and every country occupied by players.
 	 */
 	private void placeInitialArmies() {
-		for (int i = 0; i < controller.playerList.size(); i++) {
-			Player player = controller.getPlayer(i);
-			for (int j = 0; j < player.getPlayerCountries().size(); j++) {
-				Country c = player.getPlayerCountries().get(j);
-				c.setNumArmies(1);
-				c.setOwner(player);
-				player.setNumArmiesDispatched(j + 1);
+		if(tournamentFlag==false) {
+			for (int i = 0; i < controller.playerList.size(); i++) {
+				Player player = controller.getPlayer(i);
+				for (int j = 0; j < player.getPlayerCountries().size(); j++) {
+					Country c = player.getPlayerCountries().get(j);
+					c.setNumArmies(1);
+					c.setOwner(player);
+					player.setNumArmiesDispatched(j + 1);
+				}
+			}	
+		}
+		else {
+			int nOPForTournament= strategyList.length;
+			for (int i = 0; i < nOPForTournament; i++) {
+				Player player = controller.getPlayer(i);
+				for (int j = 0; j < player.getPlayerCountries().size(); j++) {
+					Country c = player.getPlayerCountries().get(j);
+					c.setNumArmies(1);
+					c.setOwner(player);
+					player.setNumArmiesDispatched(j + 1);
+				}
 			}
 		}
 
@@ -546,16 +562,28 @@ public class GameController implements Serializable{
 
 	private void placeArmiesForSetup() {
 		// each player take turns to place their armies
-		for (int i = 0; i < controller.playerList.size(); i++) {
-			Player player = playerList.get(i);
-			currentPlayer = player;
-			//player.setStrategyType("Benevolent");
-			//player.setStrategy(new AggressiveStrategy(currentPlayer));
-			//player.setStrategy(new BenevolentStrategy(currentPlayer));
-			player.getStrategy().placeArmiesForSetup();
+		if(tournamentFlag==false) {
+			for (int i = 0; i < controller.playerList.size(); i++) {
+				Player player = playerList.get(i);
+				currentPlayer = player;
+				//player.setStrategyType("Benevolent");
+				//player.setStrategy(new AggressiveStrategy(currentPlayer));
+				//player.setStrategy(new BenevolentStrategy(currentPlayer));
+				player.getStrategy().placeArmiesForSetup();
+			}	
+		}
+		else {
+			int nOPForTournament= strategyList.length;
+			for (int i = 0; i < nOPForTournament; i++) {
+				Player player = playerList.get(i);
+				currentPlayer = player;
+				//player.setStrategyType("Benevolent");
+				//player.setStrategy(new AggressiveStrategy(currentPlayer));
+				//player.setStrategy(new BenevolentStrategy(currentPlayer));
+				player.getStrategy().placeArmiesForSetup();
+			}	
 		}
 	}
-
 
 	/**
 	 * create and register a WorldDomination interface as observer to player.
@@ -990,12 +1018,10 @@ public class GameController implements Serializable{
 					initialArmies = 30;
 				break;	
 			}
-			System.out.println("Number of Players: "+numberOfPlayersForTournament);
 			for(int i = 1; i <= numberOfPlayersForTournament ; i++) {
 				String playerName = "Player " + i;
 				Player player = new Player(playerName, true, initialArmies);
 				controller.addPlayer(player);
-				System.out.println("Value of i is :" + i);
 			}
 			
 			controller.registerObserver(ui, EventType.PHASE_NOTIFY);
@@ -1006,7 +1032,7 @@ public class GameController implements Serializable{
 			System.out.println("evenly distributing countries among players in random fashion...");
 			controller.randomizeCountryDistribution(countryList, controller.getPlayerList());
 			System.out.println("-------- Setup --------");
-			setupStrategy();
+			controller.setupStrategy();
 			controller.placeInitialArmies();
 			controller.placeArmiesForSetup();
 			controller.takeTurns();
