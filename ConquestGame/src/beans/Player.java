@@ -451,29 +451,9 @@ public class Player implements Observable, Serializable{
 	 * Attack phase.
 	 *
 	 * @throws IllegalArgumentException the illegal argument exception
-	 * @throws IOException 
 	 */
-	public void attack() throws IllegalArgumentException, IOException{
+	public void attack() throws IllegalArgumentException{
 		this.strategy.attack();
-		
-		if(this.getStrategyType().toLowerCase().equals("human")) {
-			System.out.println(controller.getCurrentPhase() + " Complete.");
-			System.out.println("Current player: " + controller.getCurrentPlayer().getPlayerName());
-			Scanner userOpinion = new Scanner(System.in);
-			System.out.println("Do you want to save progress?");
-			if(userOpinion.nextLine().toLowerCase().equals("y") ||
-					userOpinion.nextLine().toLowerCase().equals("yes")) {
-				
-				GameStat progress = GameStat.getInstance();
-				progress.save();
-				System.out.println("saved....");
-			
-			}
-			
-			else {
-				System.out.println("Alright....Proceed....");
-			}
-		}
 	}
 
 	
@@ -616,23 +596,22 @@ public class Player implements Observable, Serializable{
 	public void reEnforce() throws IOException {
 		this.strategy.reEnforce();
 		
-		if(this.getStrategyType().toLowerCase().equals("human")) {
-			System.out.println(controller.getCurrentPhase() + " Complete.");
-			System.out.println("Current player: " + controller.getCurrentPlayer().getPlayerName());
-			Scanner userOpinion = new Scanner(System.in);
-			System.out.println("Do you want to save progress?");
-			if(userOpinion.nextLine().toLowerCase().equals("y") ||
-					userOpinion.nextLine().toLowerCase().equals("yes")) {
-				
-				GameStat progress = GameStat.getInstance();
-				progress.save();
-				System.out.println("saved....");
+		System.out.println(controller.getCurrentPhase() + " Complete.");
+		System.out.println("Current player: " + controller.getCurrentPlayer().getPlayerName());
+		Scanner userOpinion = new Scanner(System.in);
+		System.out.println("Do you want to save progress?");
+		
+		if(userOpinion.nextLine().toLowerCase().equals("y") ||
+				userOpinion.nextLine().toLowerCase().equals("yes")) {
 			
-			}
+			GameStat progress = GameStat.getInstance();
+			progress.save();
+			System.out.println("saved....");
 			
-			else {
-				System.out.println("Alright....Proceed....");
-			}
+		}
+		
+		else {
+			System.out.println("Alright....Proceed....");
 		}
 	}
 	
@@ -647,26 +626,23 @@ public class Player implements Observable, Serializable{
 		
 		this.strategy.fortify();
 		
+		System.out.println(controller.getCurrentPhase() + " Complete.");
+		System.out.println("Current player: " + controller.getCurrentPlayer().getPlayerName());
+		Scanner userOpinion = new Scanner(System.in);
+		System.out.println("Do you want to save progress?");
 		
-		if(this.getStrategyType().toLowerCase().equals("human")) {
-			System.out.println(controller.getCurrentPhase() + " Complete.");
-			System.out.println("Current player: " + controller.getCurrentPlayer().getPlayerName());
-			Scanner userOpinion = new Scanner(System.in);
-			System.out.println("Do you want to save progress?");
-			if(userOpinion.nextLine().toLowerCase().equals("y") ||
-					userOpinion.nextLine().toLowerCase().equals("yes")) {
-				
-				GameStat progress = GameStat.getInstance();
-				progress.save();
-				System.out.println("saved....");
+		if(userOpinion.nextLine().toLowerCase().equals("y") ||
+				userOpinion.nextLine().toLowerCase().equals("yes")) {
 			
-			}
-			
-			else {
-				System.out.println("Alright....Proceed....");
-			}
+			GameStat progress = GameStat.getInstance();
+			progress.save();
+			System.out.println("saved....");
+		
 		}
-
+		
+		else {
+			System.out.println("Alright....Proceed....");
+		}
 	}
 
 
