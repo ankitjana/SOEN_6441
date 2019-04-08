@@ -47,6 +47,16 @@ public class GameController implements Serializable{
 	/** The controller. */
 	private static GameController controller = null;
 	
+	private static boolean tournamentFlag= false;
+	private static int gameCount=0;
+	private static int turnCount;
+	private static String mapInput=null;
+	private static String[] mapList=null;
+	private static String strategyInput= null;
+	private static String[] strategyList;
+	private static String[][] finalWinnerList;
+	private static Scanner tScan;
+	
 	private  Country attackingCountry = null;
 	
 	/** Keeps track if this game is a saved game. */
@@ -109,7 +119,7 @@ public class GameController implements Serializable{
 	}
 		
 		
-	transient Scanner scan = new Scanner(System.in);
+	transient static Scanner scan = new Scanner(System.in);
 	private CardExchangeView cardView= null;
 	
 	//TODO change to private and use reflect.
@@ -342,6 +352,7 @@ public class GameController implements Serializable{
 		ui = new UI();
 		customMap = CustomMapGenerator.getInstance();
 		this.currentPhase = Phase.REENFORCEMENT;
+		finalWinnerList= new String[10][10];
 		
 	}
 
@@ -376,10 +387,78 @@ public class GameController implements Serializable{
 	 */
 	public static void main(String[] args) throws IOException, MapInvalidException, ClassNotFoundException {
 		GameController controller = GameController.getInstance();
+		System.out.println("Do you want to play in single mode or in tournament mode ? S/T");
+		char mode = scan.next().charAt(0);
+		if(mode=='S' || mode=='s') {
+			controller.modeSingle();	
+		}
+		if(mode=='T' || mode=='t') {
+			tScan= new Scanner(System.in);
+			tournamentFlag= true;
+			controller.modeTournament();	
+		}
+	}
+	
+	public void modeSingle() throws ClassNotFoundException, IOException, MapInvalidException {
 		controller.loadMap();
 		controller.createWorldDominationView();
 		controller.createCardExchangeView();
 		controller.initGame();
+	}
+	
+	public void modeTournament() throws ClassNotFoundException, IOException, MapInvalidException{
+		mapList= new String[5];
+		strategyList= new String[5];
+		System.out.println("We have 5 different Maps for you to play");
+		System.out.println("State on which maps you want to play the game");
+		System.out.println("Ex: Map1, Map2, Map3 or more");
+		mapInput= tScan.nextLine();
+		if(mapInput.contains(",")) {
+			mapList= mapInput.split(",");
+		}
+		System.out.println(mapList.length);
+		System.out.println("Provide player's strategies :");
+		System.out.println("*********STRATEGY MENU************");
+		System.out.println("1. Aggressive 2. Benevolent 3. Cheater 4. Random");
+		strategyInput= tScan.nextLine();
+
+		System.out.println("Provide number of games on each map you want to play on: ");
+		gameCount= tScan.nextInt();
+		System.out.println("Provide number of turns in each game you want to play for :");
+		turnCount= tScan.nextInt();
+		for(int i=0; i< mapList.length; i++) {
+			try {
+				System.out.println("Length of mapList is: "+mapList.length);
+				controller.loadMap();
+				for(int j=0; j < gameCount; j++) {
+					if(strategyInput.contains(",")) {
+						strategyList= strategyInput.split(",");
+					}
+					phaseCount= 0;
+					controller.createWorldDominationView();
+					controller.createCardExchangeView();
+					controller.initGame();
+					System.out.println("Game"+" "+gameCount+" "+"has ended. Going for next game...");
+					if(winner!=null) {
+						finalWinnerList[i][j]= controller.getWinner().getStrategyType();	
+					}
+					else {
+						finalWinnerList[i][j]= "DRAW";
+					}
+				}
+			} catch (IOException | MapInvalidException e) {
+				ui.handleExceptions(e.getMessage());
+				System.exit(1);
+			}
+		}
+		System.out.println("**************TOURNAMENT GAME RESULTS**************");
+		for(int i=0; i < mapList.length; i++) {
+			System.out.println("FOR MAP"+" "+i+" "+":");
+			for(int j=0; j< gameCount; j++) {
+					System.out.println("Winner of Game"+" "+j+" "+"is :"+ finalWinnerList[i][j]);	
+			}
+			System.out.println("****************************");
+		}
 	}
 
 	/**
