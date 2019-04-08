@@ -24,7 +24,9 @@ import gui.UI;
 import gui.WorldDominationView;
 import strategies.AggressiveStrategy;
 import strategies.BenevolentStrategy;
+import strategies.CheaterStrategy;
 import strategies.Human;
+import strategies.RandomStrategy;
 import utilities.CustomMapGenerator;
 import utilities.GameStat;
 import utilities.MapValidator;
@@ -508,17 +510,62 @@ public class GameController implements Serializable{
 	 * based on user input
 	 */
 	private void setupStrategy() {
-		for (int i = 0; i < controller.playerList.size(); i++) {
-			Player player = playerList.get(i);
-			currentPlayer = player;
-			if(i==0) {
-			player.setStrategyType("Aggressive");
-			player.setStrategy(new AggressiveStrategy(currentPlayer));
-			}else {
-				player.setStrategyType("Human");
-				player.setStrategy(new Human(currentPlayer));
+		if(tournamentFlag==false) {
+			System.out.println("1. Aggressive 2. Human 3. Benevolent 4. Cheater 5. Random");
+			for (int i = 0; i < controller.playerList.size(); i++) {
+				Player player = playerList.get(i);
+				currentPlayer = player;
+				System.out.println("Assign a strategy for"+" "+ currentPlayer.getPlayerName()+" "+":");
+				String choice= scan.nextLine();
+				if(choice.equalsIgnoreCase("Aggressive")) {
+				player.setStrategyType("Aggressive");
+				player.setStrategy(new AggressiveStrategy(currentPlayer));
+				}else if(choice.equalsIgnoreCase("Human")){
+					player.setStrategyType("Human");
+					player.setStrategy(new Human(currentPlayer));
+				}
+				else if(choice.equalsIgnoreCase("Benevolent")) {
+					player.setStrategyType("Benevolent");
+					player.setStrategy(new BenevolentStrategy(currentPlayer));
+				}
+				else if(choice.equalsIgnoreCase("Cheater")) {
+					player.setStrategyType("Cheater");
+					player.setStrategy(new CheaterStrategy(currentPlayer));
+				}
+				else if(choice.equalsIgnoreCase("Random")) {
+					player.setStrategyType("Random");
+					player.setStrategy(new RandomStrategy(currentPlayer));
+				}
+				else {
+					System.out.println("Invalid input. Select a valid strategy");
+				}
+				//player.setStrategy(new BenevolentStrategy(currentPlayer));
 			}
-			//player.setStrategy(new BenevolentStrategy(currentPlayer));
+		}
+		else {
+			System.out.println("Setting up the strategies for players...");
+			for(int i=0; i < strategyList.length; i++) {
+				Player player = playerList.get(i);
+				currentPlayer = player;
+				for(String strategyChoice : strategyList) {
+					if(strategyChoice.equalsIgnoreCase("Aggressive")){
+						player.setStrategyType("Aggressive");
+						player.setStrategy(new AggressiveStrategy(currentPlayer));
+					}
+					else if(strategyChoice.equalsIgnoreCase("Benevolent")) {
+						player.setStrategyType("Benevolent");
+						player.setStrategy(new BenevolentStrategy(currentPlayer));
+					}
+					else if(strategyChoice.equalsIgnoreCase("Cheater")) {
+						player.setStrategyType("Cheater");
+						player.setStrategy(new CheaterStrategy(currentPlayer));
+					}
+					else if(strategyChoice.equalsIgnoreCase("Random")) {
+						player.setStrategyType("Random");
+						player.setStrategy(new RandomStrategy(currentPlayer));
+					}
+				}
+			}
 		}
 	}
 
