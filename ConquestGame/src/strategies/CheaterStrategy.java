@@ -4,12 +4,15 @@
 package strategies;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import beans.Country;
 import beans.EventType;
 import beans.Player;
+import gui.PhaseView;
 
 /**
  * A cheater computer player strategy whose reinforce() method doubles the
@@ -26,11 +29,12 @@ public class CheaterStrategy extends Strategy implements Serializable {
 
 	public CheaterStrategy(Player player) {
 		super(player);
-		// TODO Auto-generated constructor stub
+		this.player=player;
 	}
 
 	@Override
 	public void reEnforce() {
+		//controller.setCurrentPhase("ReInforce");
 		int newArmies = obtainNewArmies();
 		player.notifyChanges(EventType.PHASE_NOTIFY);
 		Map<Country, Integer> list = controller.distributeArmies(newArmies);
@@ -38,13 +42,28 @@ public class CheaterStrategy extends Strategy implements Serializable {
 		for(Country rec:player.getPlayerCountries()) {
 			rec.setNumArmies(rec.getNumArmies()*2);
 		}
+		//player.notifyChanges(EventType.REENFORCEMENT_NOTIFY);
 		
 	}
 
 	@Override
 	public void attack() {
 		// TODO Auto-generated method stub
+		//controller.setCurrentPhase("Attack");
+		PhaseView phaseView = new PhaseView();
+		controller.registerObserver(phaseView, EventType.PHASE_VIEW_NOTIFY);
+		List<Country> defendingNeighbours = null;
+		for(Country rec:player.getPlayerCountries()) {
+			defendingNeighbours = getdefendingNeighbours(rec);
+			if(defendingNeighbours.size() > 1) {
+				break;
+			}
+		}
+		for(Country temp : defendingNeighbours)	{
+			temp.setOwner(controller.getCurrentPlayer());		
+		}
 		
+		//player.notifyChanges(EventType.ATTACK_NOTIFY);
 	}
 
 	@Override
@@ -55,16 +74,23 @@ public class CheaterStrategy extends Strategy implements Serializable {
 			if(defendingNeighbours.size()>0) {
 				rec.setNumArmies(rec.getNumArmies()*2);
 			}
-			// do we still need to provide the option of moving armies or just  double the armies if defending
-			//Neighbor is there.
-			player.notifyChanges(EventType.FORTIFICATION_NOTIFY);
+			
 		}
-		
+		player.notifyChanges(EventType.FORTIFICATION_NOTIFY);
 	}
 
 	@Override
 	public void placeArmiesForSetup() {
-		// TODO Auto-generated method stub
+		Map<Country,Integer> armyCountryMap =new HashMap<Country,Integer>();
+		Random r = new Random();
+		int maxArmies =player.getArmies();
+		for(Country rec:player.getPlayerCountries()) {
+			int temp =r.nextInt((maxArmies - 0) + 1) + 0;
+			armyCountryMap.put(rec, temp);
+			maxArmies =maxArmies-temp;
+		}
+		
+		this.distributeArmies(armyCountryMap);
 		
 	}
 
