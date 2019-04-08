@@ -480,16 +480,29 @@ public class GameController implements Serializable{
 	 * place one army on each and every country occupied by players.
 	 */
 	private void placeInitialArmies() {
-		for (int i = 0; i < controller.playerList.size(); i++) {
-			Player player = controller.getPlayer(i);
-			for (int j = 0; j < player.getPlayerCountries().size(); j++) {
-				Country c = player.getPlayerCountries().get(j);
-				c.setNumArmies(1);
-				c.setOwner(player);
-				player.setNumArmiesDispatched(j + 1);
+		if(tournamentFlag==false) {
+			for (int i = 0; i < controller.playerList.size(); i++) {
+				Player player = controller.getPlayer(i);
+				for (int j = 0; j < player.getPlayerCountries().size(); j++) {
+					Country c = player.getPlayerCountries().get(j);
+					c.setNumArmies(1);
+					c.setOwner(player);
+					player.setNumArmiesDispatched(j + 1);
+				}
+			}	
+		}
+		else {
+			int nOPForTournament= strategyList.length;
+			for (int i = 0; i < nOPForTournament; i++) {
+				Player player = controller.getPlayer(i);
+				for (int j = 0; j < player.getPlayerCountries().size(); j++) {
+					Country c = player.getPlayerCountries().get(j);
+					c.setNumArmies(1);
+					c.setOwner(player);
+					player.setNumArmiesDispatched(j + 1);
+				}
 			}
 		}
-
 	}
 	
 	/**
