@@ -774,14 +774,38 @@ public class GameController implements Serializable{
  */
 	public void takeTurns() throws MapInvalidException, IOException {
 		int i = 0;
-		while (winner == null) {
-			i = i % playerList.size();
-			currentPlayer = playerList.get(i);
-			System.out.println("==============" + currentPlayer.getPlayerName() + "'S TURN==================");
-			System.out.println("Initial Number of Armies: " + currentPlayer.getArmies());
-			takePhases();
-			i++;
-			
+		if(tournamentFlag==true) {
+			int phaseCount= turnCount;
+			while (winner == null && phaseCount>=0) {
+				i = i % playerList.size();
+				currentPlayer = playerList.get(i);
+				System.out.println("==============" + currentPlayer.getPlayerName() + "'S TURN==================");
+				System.out.println("Initial Number of Armies: " + currentPlayer.getArmies());
+				System.out.println("Countries occupied by Player: " + currentPlayer.getPlayerCountries().size());
+				// if player does not have any country,all of its  phases are skipped.
+				if(currentPlayer.getPlayerCountries().size()>0) {
+					takePhases();
+				}
+				i++;
+				phaseCount--;
+			}
+		}
+		else {
+			if(isSavedGame) {
+				i = playerList.indexOf(this.currentPlayer);
+			}
+			while (winner == null) {
+				i = i % playerList.size();
+				currentPlayer = playerList.get(i);
+				System.out.println("==============" + currentPlayer.getPlayerName() + "'S TURN==================");
+				System.out.println("Initial Number of Armies: " + currentPlayer.getArmies());
+				System.out.println("Countries occupied by Player: " + currentPlayer.getPlayerCountries().size());
+				// if player does not have any country,all of its  phases are skipped.
+				if(currentPlayer.getPlayerCountries().size()>0) {
+					takePhases();
+				}
+				i++;
+			}
 		}
 	}
 
