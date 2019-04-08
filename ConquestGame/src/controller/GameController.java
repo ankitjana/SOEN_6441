@@ -23,7 +23,9 @@ import gui.UI;
 import gui.WorldDominationView;
 import strategies.AggressiveStrategy;
 import strategies.BenevolentStrategy;
+import strategies.CheaterStrategy;
 import strategies.Human;
+import strategies.RandomStrategy;
 import utilities.CustomMapGenerator;
 import utilities.GameStat;
 import utilities.MapValidator;
@@ -50,6 +52,15 @@ public class GameController implements Serializable{
 	public void setController(GameController controller) {
 		GameController.controller = controller;
 	}
+	private static boolean tournamentFlag= false;
+	private static int gameCount=0;
+	private static int turnCount;
+	private static String mapInput=null;
+	private static String[] mapList=null;
+	private static String strategyInput= null;
+	private static String[] strategyList;
+	private static String[][] finalWinnerList;
+	private static Scanner tScan;
 
 
 	/** The current phase Info. */
@@ -93,7 +104,7 @@ public class GameController implements Serializable{
 	}
 		
 		
-	transient Scanner scan = new Scanner(System.in);
+	transient static Scanner scan = new Scanner(System.in);
 	private CardExchangeView cardView= null;
 	
 	//TODO change to private and use reflect.
@@ -358,10 +369,78 @@ public class GameController implements Serializable{
 	 */
 	public static void main(String[] args) throws IOException, MapInvalidException, ClassNotFoundException {
 		GameController controller = GameController.getInstance();
+		System.out.println("Do you want to play in single mode or in tournament mode ? S/T");
+		char mode = scan.next().charAt(0);
+		if(mode=='S' || mode=='s') {
+			controller.modeSingle();	
+		}
+		if(mode=='T' || mode=='t') {
+			tScan= new Scanner(System.in);
+			tournamentFlag= true;
+			controller.modeTournament();	
+		}
+	}
+	
+	public void modeSingle() throws ClassNotFoundException, IOException, MapInvalidException {
 		controller.loadMap();
 		controller.createWorldDominationView();
 		controller.createCardExchangeView();
 		controller.initGame();
+	}
+	
+	public void modeTournament() throws ClassNotFoundException, IOException, MapInvalidException{
+		mapList= new String[5];
+		strategyList= new String[5];
+		System.out.println("We have 5 different Maps for you to play");
+		System.out.println("State on which maps you want to play the game");
+		System.out.println("Ex: Map1, Map2, Map3 or more");
+		mapInput= tScan.nextLine();
+		if(mapInput.contains(",")) {
+			mapList= mapInput.split(",");
+		}
+		System.out.println(mapList.length);
+		System.out.println("Provide player's strategies :");
+		System.out.println("*********STRATEGY MENU************");
+		System.out.println("1. Aggressive 2. Benevolent 3. Cheater 4. Random");
+		strategyInput= tScan.nextLine();
+
+		System.out.println("Provide number of games on each map you want to play on: ");
+		gameCount= tScan.nextInt();
+		System.out.println("Provide number of turns in each game you want to play for :");
+		turnCount= tScan.nextInt();
+		for(int i=0; i< mapList.length; i++) {
+			try {
+				System.out.println("Length of mapList is: "+mapList.length);
+				controller.loadMap();
+				for(int j=0; j < gameCount; j++) {
+					if(strategyInput.contains(",")) {
+						strategyList= strategyInput.split(",");
+					}
+					//phaseCount= 0;
+					controller.createWorldDominationView();
+					controller.createCardExchangeView();
+					controller.initGame();
+					System.out.println("Game"+" "+gameCount+" "+"has ended. Going for next game...");
+					if(winner!=null) {
+						finalWinnerList[i][j]= controller.getWinner().getStrategyType();	
+					}
+					else {
+						finalWinnerList[i][j]= "DRAW";
+					}
+				}
+			} catch (IOException | MapInvalidException e) {
+				ui.handleExceptions(e.getMessage());
+				System.exit(1);
+			}
+		}
+		System.out.println("**************TOURNAMENT GAME RESULTS**************");
+		for(int i=0; i < mapList.length; i++) {
+			System.out.println("FOR MAP"+" "+i+" "+":");
+			for(int j=0; j< gameCount; j++) {
+					System.out.println("Winner of Game"+" "+j+" "+"is :"+ finalWinnerList[i][j]);	
+			}
+			System.out.println("****************************");
+		}
 	}
 
 	/**
@@ -383,16 +462,29 @@ public class GameController implements Serializable{
 	 * place one army on each and every country occupied by players.
 	 */
 	private void placeInitialArmies() {
-		for (int i = 0; i < controller.playerList.size(); i++) {
-			Player player = controller.getPlayer(i);
-			for (int j = 0; j < player.getPlayerCountries().size(); j++) {
-				Country c = player.getPlayerCountries().get(j);
-				c.setNumArmies(1);
-				c.setOwner(player);
-				player.setNumArmiesDispatched(j + 1);
+		if(tournamentFlag==false) {
+			for (int i = 0; i < controller.playerList.size(); i++) {
+				Player player = controller.getPlayer(i);
+				for (int j = 0; j < player.getPlayerCountries().size(); j++) {
+					Country c = player.getPlayerCountries().get(j);
+					c.setNumArmies(1);
+					c.setOwner(player);
+					player.setNumArmiesDispatched(j + 1);
+				}
+			}	
+		}
+		else {
+			int nOPForTournament= strategyList.length;
+			for (int i = 0; i < nOPForTournament; i++) {
+				Player player = controller.getPlayer(i);
+				for (int j = 0; j < player.getPlayerCountries().size(); j++) {
+					Country c = player.getPlayerCountries().get(j);
+					c.setNumArmies(1);
+					c.setOwner(player);
+					player.setNumArmiesDispatched(j + 1);
+				}
 			}
 		}
-
 	}
 	
 	/**
@@ -400,17 +492,62 @@ public class GameController implements Serializable{
 	 * based on user input
 	 */
 	private void setupStrategy() {
-		for (int i = 0; i < controller.playerList.size(); i++) {
-			Player player = playerList.get(i);
-			currentPlayer = player;
-			if(i==0) {
-			player.setStrategyType("Aggressive");
-			player.setStrategy(new AggressiveStrategy(currentPlayer));
-			}else {
-				player.setStrategyType("Human");
-				player.setStrategy(new Human(currentPlayer));
+		if(tournamentFlag==false) {
+			System.out.println("1. Aggressive 2. Human 3. Benevolent 4. Cheater 5. Random");
+			for (int i = 0; i < controller.playerList.size(); i++) {
+				Player player = playerList.get(i);
+				currentPlayer = player;
+				System.out.println("Assign a strategy for"+" "+ currentPlayer.getPlayerName()+" "+":");
+				String choice= scan.nextLine();
+				if(choice.equalsIgnoreCase("Aggressive")) {
+				player.setStrategyType("Aggressive");
+				player.setStrategy(new AggressiveStrategy(currentPlayer));
+				}else if(choice.equalsIgnoreCase("Human")){
+					player.setStrategyType("Human");
+					player.setStrategy(new Human(currentPlayer));
+				}
+				else if(choice.equalsIgnoreCase("Benevolent")) {
+					player.setStrategyType("Benevolent");
+					player.setStrategy(new BenevolentStrategy(currentPlayer));
+				}
+				else if(choice.equalsIgnoreCase("Cheater")) {
+					player.setStrategyType("Cheater");
+					player.setStrategy(new CheaterStrategy(currentPlayer));
+				}
+				else if(choice.equalsIgnoreCase("Random")) {
+					player.setStrategyType("Random");
+					player.setStrategy(new RandomStrategy(currentPlayer));
+				}
+				else {
+					System.out.println("Invalid input. Select a valid strategy");
+				}
+				//player.setStrategy(new BenevolentStrategy(currentPlayer));
 			}
-			//player.setStrategy(new BenevolentStrategy(currentPlayer));
+		}
+		else {
+			System.out.println("Setting up the strategies for players...");
+			for(int i=0; i < strategyList.length; i++) {
+				Player player = playerList.get(i);
+				currentPlayer = player;
+				for(String strategyChoice : strategyList) {
+					if(strategyChoice.equalsIgnoreCase("Aggressive")){
+						player.setStrategyType("Aggressive");
+						player.setStrategy(new AggressiveStrategy(currentPlayer));
+					}
+					else if(strategyChoice.equalsIgnoreCase("Benevolent")) {
+						player.setStrategyType("Benevolent");
+						player.setStrategy(new BenevolentStrategy(currentPlayer));
+					}
+					else if(strategyChoice.equalsIgnoreCase("Cheater")) {
+						player.setStrategyType("Cheater");
+						player.setStrategy(new CheaterStrategy(currentPlayer));
+					}
+					else if(strategyChoice.equalsIgnoreCase("Random")) {
+						player.setStrategyType("Random");
+						player.setStrategy(new RandomStrategy(currentPlayer));
+					}
+				}
+			}
 		}
 	}
 
@@ -421,13 +558,26 @@ public class GameController implements Serializable{
 
 	private void placeArmiesForSetup() {
 		// each player take turns to place their armies
-		for (int i = 0; i < controller.playerList.size(); i++) {
-			Player player = playerList.get(i);
-			currentPlayer = player;
-			//player.setStrategyType("Benevolent");
-			//player.setStrategy(new AggressiveStrategy(currentPlayer));
-			//player.setStrategy(new BenevolentStrategy(currentPlayer));
-			player.getStrategy().placeArmiesForSetup();
+		if(tournamentFlag==false) {
+			for (int i = 0; i < controller.playerList.size(); i++) {
+				Player player = playerList.get(i);
+				currentPlayer = player;
+				//player.setStrategyType("Benevolent");
+				//player.setStrategy(new AggressiveStrategy(currentPlayer));
+				//player.setStrategy(new BenevolentStrategy(currentPlayer));
+				player.getStrategy().placeArmiesForSetup();
+			}	
+		}
+		else {
+			int nOPForTournament= strategyList.length;
+			for (int i = 0; i < nOPForTournament; i++) {
+				Player player = playerList.get(i);
+				currentPlayer = player;
+				//player.setStrategyType("Benevolent");
+				//player.setStrategy(new AggressiveStrategy(currentPlayer));
+				//player.setStrategy(new BenevolentStrategy(currentPlayer));
+				player.getStrategy().placeArmiesForSetup();
+			}	
 		}
 	}
 
