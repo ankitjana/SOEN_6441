@@ -2,7 +2,6 @@ package strategies;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -43,7 +42,6 @@ public class RandomStrategy extends Strategy implements Serializable {
 	}
 
 	public void randomAttack(Country attackingCountry, Country attackedCountry) {
-		controller.setAttackingCountry(attackingCountry);
 		int minRange = 0;
 		int maxRange = 5;
 		Random rand = new Random();
@@ -64,11 +62,12 @@ public class RandomStrategy extends Strategy implements Serializable {
 	
 	@Override
 	public void reEnforce() {
+		controller.setCurrentPhase("ReInforce");
 		int newArmies = obtainNewArmies();
 		player.notifyChanges(EventType.PHASE_NOTIFY);
 		Country country = getRandomCountry();
 		country.setNumArmies(newArmies);
-		//player.notifyChanges(EventType.REENFORCEMENT_NOTIFY);
+		player.notifyChanges(EventType.REENFORCEMENT_NOTIFY);
 //		Map<Country, Integer> list = controller.distributeArmies(newArmies);
 //		this.distributeArmies(list);
 //		for(Country rec:player.getPlayerCountries()) {
@@ -80,6 +79,7 @@ public class RandomStrategy extends Strategy implements Serializable {
 
 	@Override
 	public void attack() {
+		controller.setCurrentPhase("Attack");
 		PhaseView phaseView = new PhaseView();
 		controller.registerObserver(phaseView, EventType.PHASE_VIEW_NOTIFY);
 		
@@ -108,13 +108,14 @@ public class RandomStrategy extends Strategy implements Serializable {
 		if (attackingCountry.getNumArmies() > 2 && toAttack != null) {
 			this.randomAttack(attackingCountry, toAttack);
 		}
-		//player.notifyChanges(EventType.ATTACK_NOTIFY);
+		player.notifyChanges(EventType.ATTACK_NOTIFY);
 		
 	}
 
 	@Override
 	public void fortify() {
 		// TODO Auto-generated method stub
+		controller.setCurrentPhase("Fortification");
 		PhaseView phaseView = new PhaseView();
 		controller.registerObserver(phaseView, EventType.PHASE_VIEW_NOTIFY);
 		Country fromCountry = null, toCountry = null;
@@ -205,16 +206,7 @@ public class RandomStrategy extends Strategy implements Serializable {
 
 	@Override
 	public void placeArmiesForSetup() {
-		Map<Country,Integer> armyCountryMap =new HashMap<Country,Integer>();
-		Random r = new Random();
-		int maxArmies =player.getArmies();
-		for(Country rec:player.getPlayerCountries()) {
-			int temp =r.nextInt((maxArmies - 0) + 1) + 0;
-			armyCountryMap.put(rec, temp);
-			maxArmies =maxArmies-temp;
-		}
-		
-		this.distributeArmies(armyCountryMap);
+		// TODO Auto-generated method stub
 		
 	}
 }

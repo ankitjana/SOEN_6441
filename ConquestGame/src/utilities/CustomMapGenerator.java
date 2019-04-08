@@ -29,212 +29,41 @@ public class CustomMapGenerator implements Serializable{
 	/** The custom map. */
 	private static CustomMapGenerator customMap = null;
 	
-	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public CustomMapGenerator getCustomMap() {
-		return customMap;
-	}
-
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public void setCustomMap(CustomMapGenerator customMap) {
-		CustomMapGenerator.customMap = customMap;
-	}
-
-
-
 	/** The filepath. */
 	private final String FILEPATH = "src/resources/usermap.map";
 	
 	/** The continents. */
 	private Map<String, Integer> continents = null;
 	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public Map<String, Integer> getContinents() {
-		return continents;
-	}
-
-
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public void setContinents(Map<String, Integer> continents) {
-		this.continents = continents;
-	}
-	
-	
-
 	/** The countries. */
 	private ArrayList<String> countries = null;
 	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public ArrayList<String> getCountries() {
-		return countries;
-	}
-	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public void setCountries(ArrayList<String> countries) {
-		this.countries = countries;
-	}
-
-
-
 	/** The remove continents. */
 	private ArrayList<String> removeContinents = null;
 	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public ArrayList<String> getRemoveContinents() {
-		return removeContinents;
-	}
-	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public void setRemoveContinents(ArrayList<String> removeContinents) {
-		this.removeContinents = removeContinents;
-	}
-
-
-
 	/** The remove countries. */
 	private ArrayList<String> removeCountries = null;
 	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public ArrayList<String> getRemoveCountries() {
-		return removeCountries;
-	}
-
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public void setRemoveCountries(ArrayList<String> removeCountries) {
-		this.removeCountries = removeCountries;
-	}
-
-
-
 	/** The remove adjacent countries. */
 	private ArrayList<String> removeAdjacentCountries = null;
 	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public ArrayList<String> getRemoveAdjacentCountries() {
-		return removeAdjacentCountries;
-	}
-
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public void setRemoveAdjacentCountries(ArrayList<String> removeAdjacentCountries) {
-		this.removeAdjacentCountries = removeAdjacentCountries;
-	}
-
-
-
 	/** The adj map. */
 	private Map<String,List<String>> adjMap =null;
 	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public Map<String, List<String>> getAdjMap() {
-		return adjMap;
-	}
-	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public void setAdjMap(Map<String, List<String>> adjMap) {
-		this.adjMap = adjMap;
-	}
-
-
-
 	/** The country default. */
 	public List<Country> countryDefault =null;
 	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public List<Country> getCountryDefault() {
-		return countryDefault;
-	}
-	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public void setCountryDefault(List<Country> countryDefault) {
-		this.countryDefault = countryDefault;
-	}
-
-
-
 	/** The continentmap. */
 	private Map<String, Continent> continentmap=null;
 	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public Map<String, Continent> getContinentmap() {
-		return continentmap;
-	}
-	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public void setContinentmap(Map<String, Continent> continentmap) {
-		this.continentmap = continentmap;
-	}
-
-
-
 	/** The country map. */
 	private Map<String, Country> countryMap=null;
-	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public Map<String, Country> getCountryMap() {
-		return countryMap;
-	}
-
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public void setCountryMap(Map<String, Country> countryMap) {
-		this.countryMap = countryMap;
-	}
-
-
-
 	/** The adj country map. */
 	private Map<String,List<String>> adjCountryMap = null;
 	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public Map<String, List<String>> getAdjCountryMap() {
-		return adjCountryMap;
-	}
-
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public void setAdjCountryMap(Map<String, List<String>> adjCountryMap) {
-		this.adjCountryMap = adjCountryMap;
-	}
-
-
-
 	/** The edit map. */
 	private static EditMap editMap = null;
 	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public EditMap getEditMap() {
-		return editMap;
-	}
-
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public void setEditMap(EditMap editMap) {
-		CustomMapGenerator.editMap = editMap;
-	}
-
-
-
 	/** The editedmap. */
 	private String EDITEDMAP = "src/resources/usermap.map";
 	
@@ -244,18 +73,6 @@ public class CustomMapGenerator implements Serializable{
 	/** The map controller. */
 	private MapController mapController;
 	
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public MapController getMapController() {
-		return mapController;
-	}
-
-	//It should be only used for game saving.
-	//Don't use for other purpose.
-	public void setMapController(MapController mapController) {
-		this.mapController = mapController;
-	}
-
 	/**
 	 * Instantiates a new custom map generator.
 	 */

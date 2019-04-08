@@ -38,7 +38,7 @@ public class BenevolentStrategy extends Strategy implements Serializable {
 
 	@Override
 	public void fortify() {
-		
+		controller.setCurrentPhase("Fortification");
 		PhaseView phaseView = new PhaseView();
 		controller.registerObserver(phaseView, EventType.PHASE_VIEW_NOTIFY);
 		player.notifyChanges(EventType.PHASE_VIEW_NOTIFY);

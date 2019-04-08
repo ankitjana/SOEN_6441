@@ -13,7 +13,6 @@ import java.util.Scanner;
 import beans.Continent;
 import beans.Country;
 import beans.EventType;
-import beans.Phase;
 import beans.Player;
 import exception.MapInvalidException;
 import gui.CardExchangeView;
@@ -24,9 +23,7 @@ import gui.UI;
 import gui.WorldDominationView;
 import strategies.AggressiveStrategy;
 import strategies.BenevolentStrategy;
-import strategies.CheaterStrategy;
 import strategies.Human;
-import strategies.RandomStrategy;
 import utilities.CustomMapGenerator;
 import utilities.GameStat;
 import utilities.MapValidator;
@@ -47,6 +44,7 @@ public class GameController implements Serializable{
 	/** The controller. */
 	private static GameController controller = null;
 	
+
 	private static boolean tournamentFlag= false;
 	private static int gameCount=0;
 	private static int turnCount;
@@ -69,7 +67,6 @@ public class GameController implements Serializable{
 	public void setAttackingCountry(Country attackingCountry) {
 		this.attackingCountry = attackingCountry;
 	}
-
 	//TODO change to private and use reflect.
 	//It should be only used for game saving.
 	//Don't use for other purpose.
@@ -79,7 +76,7 @@ public class GameController implements Serializable{
 
 
 	/** The current phase Info. */
-	private Phase currentPhase;
+	private String currentPhase;
 	
 
 	/** The World Domination View. */
@@ -258,7 +255,6 @@ public class GameController implements Serializable{
 
 	/** The ui. */
 	private UI ui = null;
-	private int phaseCount=0;
 	
 	//TODO change to private and use reflect.
 	//It should be only used for game saving.
@@ -330,7 +326,7 @@ public class GameController implements Serializable{
 	 *
 	 * @return String, the current phase of the game.
 	 */
-	public Phase getCurrentPhase() {
+	public String getCurrentPhase() {
 		return currentPhase;
 	}
 
@@ -339,7 +335,7 @@ public class GameController implements Serializable{
 	 *
 	 * @param currentPhase The current phase name
 	 */
-	public void setCurrentPhase(Phase currentPhase) {
+	public void setCurrentPhase(String currentPhase) {
 		this.currentPhase = currentPhase;
 	}
 
@@ -351,6 +347,7 @@ public class GameController implements Serializable{
 		playerList = new ArrayList<Player>();
 		ui = new UI();
 		customMap = CustomMapGenerator.getInstance();
+
 		this.currentPhase = Phase.REENFORCEMENT;
 		finalWinnerList= new String[10][10];
 		
@@ -510,33 +507,15 @@ public class GameController implements Serializable{
 	 * based on user input
 	 */
 	private void setupStrategy() {
-		System.out.println("1. Aggressive 2. Human 3. Benevolent 4. Cheater 5. Random");
 		for (int i = 0; i < controller.playerList.size(); i++) {
 			Player player = playerList.get(i);
 			currentPlayer = player;
-			System.out.println("Assign a strategy for"+" "+ currentPlayer.getPlayerName()+" "+":");
-			int choice= scan.nextInt();
-			if(choice==1) {
+			if(i==0) {
 			player.setStrategyType("Aggressive");
 			player.setStrategy(new AggressiveStrategy(currentPlayer));
-			}else if(choice==2){
+			}else {
 				player.setStrategyType("Human");
 				player.setStrategy(new Human(currentPlayer));
-			}
-			else if(choice==3) {
-				player.setStrategyType("Benevolent");
-				player.setStrategy(new BenevolentStrategy(currentPlayer));
-			}
-			else if(choice==4) {
-				player.setStrategyType("Cheater");
-				player.setStrategy(new CheaterStrategy(currentPlayer));
-			}
-			else if(choice==5) {
-				player.setStrategyType("Random");
-				player.setStrategy(new RandomStrategy(currentPlayer));
-			}
-			else {
-				System.out.println("Invalid input. Select a valid strategy");
 			}
 			//player.setStrategy(new BenevolentStrategy(currentPlayer));
 		}
@@ -682,7 +661,6 @@ public class GameController implements Serializable{
 			}
 		} else if (selectedOption == 4) {
 			//try {
-				isSavedGame = true;
 				gameStat = GameStat.getInstance();
 				gameStat.load();
 //			} catch (ClassNotFoundException e) {
@@ -727,54 +705,33 @@ public class GameController implements Serializable{
 //	}
 
 
-//	/**
-// * Take turns.
-// *
-// * @throws MapInvalidException the map invalid exception
-//	 * @throws IOException 
-// */
-//	public void takeTurns() throws MapInvalidException, IOException {
-//		int i = 0;
-//		//System.out.println("Provide number of turns you wish to play");
-//		//phaseCount= scan.nextInt();
-//		while (winner == null) {
-//			i = i % playerList.size();
-//			currentPlayer = playerList.get(i);
-//			System.out.println("==============" + currentPlayer.getPlayerName() + "'S TURN==================");
-//			System.out.println("Initial Number of Armies: " + currentPlayer.getArmies());
-//			takePhases();
-//			i++;
-//			//phaseCount--;
-//		}
-//		/*if(winner== null) {
-//			System.out.println("GAME DRAW !!");
-//		}
-//		else {
-//			System.out.println(winner.getPlayerName()+" "+"WONS THE GAME !!");
-//		}*/
-//	}
-	
+	/**
+ * Take turns.
+ *
+ * @throws MapInvalidException the map invalid exception
+	 * @throws IOException 
+ */
 	public void takeTurns() throws MapInvalidException, IOException {
 		int i = 0;
-		if(isSavedGame) {
-			i = playerList.indexOf(this.currentPlayer);
-		}
 		while (winner == null) {
 			i = i % playerList.size();
 			currentPlayer = playerList.get(i);
 			System.out.println("==============" + currentPlayer.getPlayerName() + "'S TURN==================");
 			System.out.println("Initial Number of Armies: " + currentPlayer.getArmies());
-			System.out.println("Countries occupied by Player: " + currentPlayer.getPlayerCountries().size());
-			// if player does not have any country,all of its  phases are skipped.
-			if(currentPlayer.getPlayerCountries().size()>0) {
-				takePhases();
-			}
+			takePhases();
 			i++;
 			
 		}
 	}
-	
-	private void exchangeCards() {
+
+	/**
+	 * Take phases.
+	 * 
+	 * @throws MapInvalidException
+	 * @throws IOException 
+	 */
+	public void takePhases() throws MapInvalidException, IOException {
+//		currentPhase = new ReEnforcement();
 		cardView.getCardProgress();
 		if (currentPlayer.getCardsAcquired().size() >= 3 && getCurrentPlayer().getStrategyType().equals("Human")) {
 			System.out.println("Do you want to exchange your cards for army reinforcement ? Y/N");
@@ -793,149 +750,37 @@ public class GameController implements Serializable{
 		}else if(currentPlayer.getCardsAcquired().size() >= 5) {
 			currentPlayer.exchangeCards();
 		}
-	}
-	
-	public void takePhases() throws IOException {
-		
-		switch(this.getCurrentPhase().getValue()) {
-		case 0:
-			exchangeCards();
-			reEnforce();
-		case 1:
-			boolean	isAnyCountryInvaded =false;
-			while (true) {
-				
-				try {
-					// ask user if wants to make an attack and check if user is able to attack (at
-					// least 2 armies in one country)
-					if (isWar() && canAttack()) {
-						attack();
-					}
-					isAnyCountryInvaded = currentPlayer.isAnyCountryInvaded();
-					if (isAnyCountryInvaded == true) {
-						currentPlayer.addCards();
-					}
-					
-					break;
-				} catch (IllegalArgumentException e) {
-					ui.handleExceptions(e.getMessage());
-				}
-			}
-		case 2:
-			while(true) {
-				try {
-					if(canFortify()) {
-						fortify();
-					}else {
-						ui.showDialog("The player is not qualified for fortification");
-					}
-					break;
-				}catch(IllegalArgumentException e) {
-					ui.handleExceptions(e.getMessage());
-				}
-			}
-			break;
-		}
-		//
-		setCurrentPhase(Phase.REENFORCEMENT);
-	}
-//	/**
-//	 * Take phases.
-//	 * 
-//	 * @throws MapInvalidException
-//	 * @throws IOException 
-//	 */
-//	public void takePhases() throws MapInvalidException, IOException {	
-//		
-//		exchangeCards();
-//		reEnforce();
-//		boolean	isAnyCountryInvaded =false;
-//		while (true) {
-//			
-//			try {
-//				// ask user if wants to make an attack and check if user is able to attack (at
-//				// least 2 armies in one country)
-//				if (isWar() && canAttack()) {
-//					attack();
-//				}
-//				isAnyCountryInvaded = currentPlayer.isAnyCountryInvaded();
-//				if (isAnyCountryInvaded == true) {
-//					currentPlayer.addCards();
-//				}
-//				if(canFortify()) {
-//					fortify();
-//				} else {
-//					ui.showDialog("The player is not qualified for fortification");
-//				}
-//				
-//				break;
-//			} catch (IllegalArgumentException e) {
-//				ui.handleExceptions(e.getMessage());
-//			}
-//		}
-//	}
-
-	/**
-	 * @throws IOException 
-	 * @throws IllegalArgumentException 
-	 * 
-	 */
-	private void fortify() throws IllegalArgumentException, IOException {
-		currentPlayer.fortify();
-		currentPlayer.notifyChanges(EventType.PHASE_NOTIFY);
-		
-	}
-
-	/**
-	 * @throws IOException 
-	 * @throws IllegalArgumentException 
-	 * 
-	 */
-	private void attack() throws IllegalArgumentException, IOException {
-		do {
-			currentPlayer.attack();
-			// check if current player has won the game
-			if (currentPlayer.getPlayerCountries().size() == MapValidator.countriesList.size()) {
-				winner = currentPlayer;
-				ui.showDialog(currentPlayer.getPlayerName() + " HAS CONQUER THE WORLD!!");
-				ui.showDialog("THE END!!!");
-				System.exit(0);
-			}
-			currentPlayer.notifyChanges(EventType.PHASE_NOTIFY);
-		} while (canAttack() && keepWar());
-		
-	}
-
-	/**
-	 * @throws IOException 
-	 * 
-	 */
-	private void reEnforce() throws IOException {
-		setCurrentPhase(Phase.REENFORCEMENT);
 		currentPlayer.reEnforce();
 		currentPlayer.notifyChanges(EventType.PHASE_NOTIFY);
-
-	}
-
-	/**
-	 * checks if player can fortify by having at least 1 country with 2 or mor armies and at least 2 adj countries
-	 * @return true if player can fortify
-	 */
-	private boolean canFortify() {
-		//check if there's at least 1 pair of countries adj to each other and one of them has 2 or more armies 
-		List<Country> countries = currentPlayer.getPlayerCountries();
-		for(int i = 0; i < countries.size()-1; i++) {
-			Country con = countries.get(i);
-			List<String> adjConNames = con.getAdjacentCountries();
-			for(int j = i+1; j < countries.size(); j++) {
-				if(adjConNames.contains(countries.get(j).getName())) {
-					if(con.getNumArmies() >= 2 || countries.get(j).getNumArmies() >= 2) {
-						return true;
-					}
+		while (true) {
+			boolean	isAnyCountryInvaded =false;
+			try {
+				// ask user if wants to make an attack and check if user is able to attack (at
+				// least 2 armies in one country)
+				if (isWar() && canAttack()) {
+					do {
+						currentPlayer.attack();
+						// check if current player has won the game
+						if (currentPlayer.getPlayerCountries().size() == MapValidator.countriesList.size()) {
+							winner = currentPlayer;
+							ui.showDialog(currentPlayer.getPlayerName() + " HAS CONQUER THE WORLD!!");
+							ui.showDialog("THE END!!!");
+							System.exit(0);
+						}
+						currentPlayer.notifyChanges(EventType.PHASE_NOTIFY);
+					} while (canAttack() && keepWar());
+				isAnyCountryInvaded = currentPlayer.isAnyCountryInvaded();
 				}
+				if (isAnyCountryInvaded == true) {
+					currentPlayer.addCards();
+				}
+				currentPlayer.fortify();
+				currentPlayer.notifyChanges(EventType.PHASE_NOTIFY);
+				break;
+			} catch (IllegalArgumentException e) {
+				ui.handleExceptions(e.getMessage());
 			}
 		}
-		return false;
 	}
 
 	/**
@@ -1061,7 +906,6 @@ public class GameController implements Serializable{
 				controller.registerObserver(ui, EventType.PHASE_NOTIFY);
 				controller.registerObserver(wdView, EventType.FORTIFICATION_NOTIFY);
 				controller.registerObserver(cardView, EventType.CARDS_EXCHANGE_NOTIFY);
-				
 //				controller.registerObserver(phaseView, EventType.PHASE_VIEW_NOTIFY);
 				
 				
