@@ -204,7 +204,6 @@ public abstract class Strategy implements Serializable {
 
 			// check if attacker has conquered a whole continent
 			Continent continent = map.getContinent(attackedCountry.getContinent());
-			System.out.println("attackedCountry.getContinent() "+attackedCountry.getContinent());
 			if (player.hasConqueredContinent(continent)) {
 				player.addContinent(continent.getName(), continent);
 				controller.showDialog(player.getPlayerName() + " has conquered " + continent.getName());
@@ -297,13 +296,11 @@ public abstract class Strategy implements Serializable {
 	 */
 	public Country compareCountries(String getType, List<Country> countryToRemove) {
 		List<Country> countryList = player.getPlayerCountries();
-		Country toReturn =null;
 		if (countryToRemove != null) {
 			countryList.removeAll(countryToRemove);
 		}
-		if(countryList.size()>0) {
-		 toReturn = countryList.get(0);
-		}
+		
+		Country toReturn = countryList.get(0);
 		for (int i = 0; i < countryList.size(); i++) {
 			for (int j = i + 1; j < countryList.size(); j++) {
 				if (getType.equalsIgnoreCase("strongest")) {
