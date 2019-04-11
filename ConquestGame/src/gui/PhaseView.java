@@ -26,6 +26,14 @@ public class PhaseView implements Observer, Serializable{
 	public void update(Observable sub) {
 		System.out.println("Current state : " + controller.getCurrentPhase());
 		System.out.println("Current Player : " + controller.getCurrentPlayer().getPlayerName());
+		System.out.println("Human : " + controller.getCurrentPlayer().isHuman());
+		System.out.println("Attacking Country : " + controller.getAttackingCountry().getName());
+		System.out.println("Attacking Country : " + controller.getAttackedCountry().getName());
+		System.out.println("Strategy : " + controller.getCurrentPlayer().getStrategyType());
+		System.out.println("Player occupied continents : " + controller.getCurrentPlayer().getPlayerContinents().size());
+		System.out.println("Player occupied countries : " + controller.getCurrentPlayer().getPlayerCountries().size());
+		System.out.println("Status saved : " + controller.isSavedGame());
+		
 	}
 
 	
